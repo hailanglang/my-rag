@@ -22,7 +22,7 @@ func TestOpenAICompat_Embed_single(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	e := NewOpenAICompat(srv.URL, "sk-test", "deepseek-embed")
+	e := NewOpenAICompat(srv.URL, "sk-test", "deepseek-embed", 0)
 	vecs, err := e.Embed(context.Background(), []string{"a"})
 	if err != nil {
 		t.Fatal(err)
@@ -45,7 +45,7 @@ func TestOpenAICompat_Embed_reordersByIndex(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	e := NewOpenAICompat(srv.URL, "k", "m")
+	e := NewOpenAICompat(srv.URL, "k", "m", 0)
 	vecs, err := e.Embed(context.Background(), []string{"first", "second"})
 	if err != nil {
 		t.Fatal(err)
@@ -59,7 +59,7 @@ func TestOpenAICompat_Embed_reordersByIndex(t *testing.T) {
 }
 
 func TestOpenAICompat_Embed_emptyInput(t *testing.T) {
-	e := NewOpenAICompat("http://x", "k", "m")
+	e := NewOpenAICompat("http://x", "k", "m", 0)
 	v, err := e.Embed(context.Background(), nil)
 	if err != nil || v != nil {
 		t.Fatalf("v=%v err=%v", v, err)
@@ -72,7 +72,7 @@ func TestOpenAICompat_Embed_httpError(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	e := NewOpenAICompat(srv.URL, "k", "m")
+	e := NewOpenAICompat(srv.URL, "k", "m", 0)
 	_, err := e.Embed(context.Background(), []string{"x"})
 	if err == nil {
 		t.Fatal("expected error")

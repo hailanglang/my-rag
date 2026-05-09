@@ -39,16 +39,16 @@ func main() {
 
 	go runRetentionPurge(db)
 
-	emb := embed.NewOpenAICompat(cfg.DeepSeekBaseURL, cfg.DeepSeekAPIKey, cfg.DeepSeekEmbedModel)
+	emb := embed.NewOpenAICompat(cfg.EmbedBaseURL, cfg.EmbedAPIKey, cfg.EmbedModel, cfg.EmbedDimensions)
 	stream := llm.NewDeepSeek(cfg.DeepSeekBaseURL, cfg.DeepSeekAPIKey, cfg.DeepSeekChatModel)
 	h := httpapi.NewRouter(&httpapi.RouterConfig{
-		DB:                db,
-		UploadDir:         cfg.UploadDir,
-		Embedder:          emb,
-		IndexTimeout:      cfg.IndexTimeout,
-		Streamer:          stream,
-		RetrieveTimeout:   cfg.RetrieveTimeout,
-		LLMStreamTimeout:  cfg.LLMStreamTimeout,
+		DB:               db,
+		UploadDir:        cfg.UploadDir,
+		Embedder:         emb,
+		IndexTimeout:     cfg.IndexTimeout,
+		Streamer:         stream,
+		RetrieveTimeout:  cfg.RetrieveTimeout,
+		LLMStreamTimeout: cfg.LLMStreamTimeout,
 	})
 
 	log.Printf("listening %s", cfg.HTTPAddr)

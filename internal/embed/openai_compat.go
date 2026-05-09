@@ -13,25 +13,29 @@ import (
 
 // OpenAICompat calls an OpenAI-compatible POST /v1/embeddings endpoint.
 type OpenAICompat struct {
-	BaseURL string // e.g. https://api.deepseek.com (no trailing slash)
-	APIKey  string
-	Model   string
-	Client  *http.Client
+	BaseURL    string // e.g. https://dashscope.aliyuncs.com/compatible-mode/v1 (no trailing slash)
+	APIKey     string
+	Model      string
+	Dimensions int // 0 = omit; >0 sets JSON "dimensions" (e.g. Aliyun text-embedding-v4)
+	Client     *http.Client
 }
 
 // NewOpenAICompat returns an embedder backed by baseURL + /v1/embeddings.
-func NewOpenAICompat(baseURL, apiKey, model string) *OpenAICompat {
+// dimensions 0 omits the field; use a positive value (e.g. 1024) for providers that require it.
+func NewOpenAICompat(baseURL, apiKey, model string, dimensions int) *OpenAICompat {
 	return &OpenAICompat{
-		BaseURL: strings.TrimRight(strings.TrimSpace(baseURL), "/"),
-		APIKey:  apiKey,
-		Model:   model,
-		Client:  http.DefaultClient,
+		BaseURL:    strings.TrimRight(strings.TrimSpace(baseURL), "/"),
+		APIKey:     apiKey,
+		Model:      model,
+		Dimensions: dimensions,
+		Client:     http.DefaultClient,
 	}
 }
 
 type embeddingsRequest struct {
-	Model string      `json:"model"`
-	Input interface{} `json:"input"` // []string or string
+	Model      string      `json:"model"`
+	Input      interface{} `json:"input"` // []string or string
+	Dimensions *int        `json:"dimensions,omitempty"`
 }
 
 type embeddingsResponse struct {
@@ -49,7 +53,12 @@ func (c *OpenAICompat) Embed(ctx context.Context, texts []string) ([][]float32, 
 	if c.BaseURL == "" || c.APIKey == "" || c.Model == "" {
 		return nil, fmt.Errorf("embed: BaseURL, APIKey, and Model are required")
 	}
-	body, err := json.Marshal(embeddingsRequest{Model: c.Model, Input: texts})
+	reqBody := embeddingsRequest{Model: c.Model, Input: texts}
+	if c.Dimensions > 0 {
+		d := c.Dimensions
+		reqBody.Dimensions = &d
+	}
+	body, err := json.Marshal(reqBody)
 	if err != nil {
 		return nil, err
 	}

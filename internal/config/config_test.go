@@ -23,8 +23,17 @@ func TestLoad_Defaults(t *testing.T) {
 	if c.IndexTimeout != 5*time.Minute {
 		t.Fatalf("IndexTimeout=%v", c.IndexTimeout)
 	}
-	if c.DeepSeekEmbedModel != "deepseek-embedding" {
-		t.Fatalf("DeepSeekEmbedModel=%q", c.DeepSeekEmbedModel)
+	if c.EmbedBaseURL != "https://dashscope.aliyuncs.com/compatible-mode/v1" {
+		t.Fatalf("EmbedBaseURL=%q", c.EmbedBaseURL)
+	}
+	if c.EmbedModel != "text-embedding-v4" {
+		t.Fatalf("EmbedModel=%q", c.EmbedModel)
+	}
+	if c.EmbedDimensions != 1024 {
+		t.Fatalf("EmbedDimensions=%d", c.EmbedDimensions)
+	}
+	if c.EmbedAPIKey != "sk-test" {
+		t.Fatalf("EmbedAPIKey=%q", c.EmbedAPIKey)
 	}
 }
 
@@ -33,5 +42,17 @@ func TestLoad_MissingAPIKey(t *testing.T) {
 	_, err := Load()
 	if err == nil {
 		t.Fatal("expected error")
+	}
+}
+
+func TestLoad_EmbedKeyPrefersDashScope(t *testing.T) {
+	t.Setenv("DEEPSEEK_API_KEY", "sk-deep")
+	t.Setenv("DASHSCOPE_API_KEY", "sk-dash")
+	c, err := Load()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if c.EmbedAPIKey != "sk-dash" {
+		t.Fatalf("EmbedAPIKey=%q want sk-dash", c.EmbedAPIKey)
 	}
 }

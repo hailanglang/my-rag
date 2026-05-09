@@ -6,16 +6,21 @@
 
 - Go **1.22+**（以根目录 `go.mod` 的 `go` 指令为准）
 - **pnpm**（前端）
-- 可用的 **DeepSeek API Key**（或兼容 OpenAI Chat Completions / Embeddings 的其它服务，见下文）
+- 可用的 **DeepSeek API Key**（对话）
+- 可用的 **阿里云百炼 API Key**（向量化，[官方说明](https://help.aliyun.com/zh/model-studio/embedding)）；若未单独配置，会回退使用 `DEEPSEEK_API_KEY`（仅在你把 `EMBED_BASE_URL` 指到同一兼容网关时才有意义）
 
 ## 环境变量（后端）
 
 | 变量 | 必填 | 默认值 | 说明 |
 |------|------|--------|------|
-| `DEEPSEEK_API_KEY` | **是** | — | DeepSeek（或兼容服务）的 API Key |
-| `DEEPSEEK_BASE_URL` | 否 | `https://api.deepseek.com` | 兼容 OpenAI 的 Base URL，**不要**带末尾 `/` |
-| `DEEPSEEK_CHAT_MODEL` | 否 | `deepseek-chat` | 对话模型名，对应 `POST .../v1/chat/completions` |
-| `DEEPSEEK_EMBED_MODEL` | 否 | `deepseek-embedding` | 向量模型名，对应 `POST .../v1/embeddings`（与 DeepSeek 控制台文档一致） |
+| `DEEPSEEK_API_KEY` | **是** | — | 对话用：DeepSeek（或兼容 Chat Completions 的服务）API Key |
+| `DEEPSEEK_BASE_URL` | 否 | `https://api.deepseek.com` | 对话 Base URL，**不要**带末尾 `/` |
+| `DEEPSEEK_CHAT_MODEL` | 否 | `deepseek-chat` | 对话模型，`POST .../v1/chat/completions` |
+| `DASHSCOPE_API_KEY` | 否* | — | 向量化用：阿里云百炼（DashScope）API Key；未设置时依次尝试 `EMBED_API_KEY`、`DEEPSEEK_API_KEY` |
+| `EMBED_BASE_URL` | 否 | `https://dashscope.aliyuncs.com/compatible-mode/v1` | 嵌入 OpenAI 兼容 Base（北京地域）；新加坡见下方 |
+| `EMBED_MODEL` | 否 | `text-embedding-v4` | 嵌入模型名，见[向量化文档](https://help.aliyun.com/zh/model-studio/embedding) |
+| `EMBED_DIMENSIONS` | 否 | `1024` | 向量维度；设为 `0` 表示请求体不传 `dimensions`（使用服务商默认）。**更换维度或模型后需重新索引文档** |
+| `EMBED_API_KEY` | 否 | — | 仅嵌入用的 Key（不配则用 `DASHSCOPE_API_KEY` / `DEEPSEEK_API_KEY`） |
 | `HTTP_ADDR` | 否 | `:8080` | HTTP 监听地址 |
 | `DATABASE_PATH` | 否 | `./data/app.db` | SQLite 数据库文件路径 |
 | `UPLOAD_DIR` | 否 | `./data/uploads` | 上传文件目录 |
@@ -23,30 +28,34 @@
 | `LLM_STREAM_TIMEOUT_SEC` | 否 | `180` | 单次流式对话总超时（秒） |
 | `INDEX_TIMEOUT_SEC` | 否 | `300` | 单文档索引超时（秒） |
 
-将 `DEEPSEEK_BASE_URL` / 模型名改成你的兼容网关即可对接其它 OpenAI 兼容供应商（路径仍为 `/v1/chat/completions` 与 `/v1/embeddings`）。
+\* 使用默认百炼嵌入时，请配置 **`DASHSCOPE_API_KEY`**（与对话 Key 可不同）。
 
-## DeepSeek 与 OpenAI 兼容说明
+**新加坡地域**嵌入：将 `EMBED_BASE_URL` 设为 `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`。
+
+将 `DEEPSEEK_*` 指到其它 OpenAI 兼容网关即可替换对话供应商；将 `EMBED_*` 指到其它兼容 `/v1/embeddings` 的网关即可替换嵌入供应商。
+
+## DeepSeek 与百炼（OpenAI 兼容）说明
 
 后端通过 **OpenAI 兼容 HTTP 接口** 调用上游：
 
-- **对话**：`{DEEPSEEK_BASE_URL}/v1/chat/completions`（流式 `stream: true`）
-- **向量**：`{DEEPSEEK_BASE_URL}/v1/embeddings`
-
-鉴权方式为请求头 `Authorization: Bearer <DEEPSEEK_API_KEY>`（与常见 OpenAI SDK 一致）。
+- **对话**：`{DEEPSEEK_BASE_URL}/v1/chat/completions`（流式 `stream: true`），`Authorization: Bearer <DEEPSEEK_API_KEY>`
+- **向量化**：`{EMBED_BASE_URL}/v1/embeddings`，`Authorization: Bearer <Embed 侧 API Key>`（默认模型 **text-embedding-v4**，见阿里云 [向量化](https://help.aliyun.com/zh/model-studio/embedding)）
 
 ## 启动后端
 
 在仓库根目录（本 worktree 根）执行：
 
 ```bash
-set DEEPSEEK_API_KEY=你的密钥
+set DEEPSEEK_API_KEY=你的DeepSeek密钥
+set DASHSCOPE_API_KEY=你的百炼密钥
 go run ./cmd/server
 ```
 
 Linux / macOS：
 
 ```bash
-export DEEPSEEK_API_KEY=你的密钥
+export DEEPSEEK_API_KEY=你的DeepSeek密钥
+export DASHSCOPE_API_KEY=你的百炼密钥
 go run ./cmd/server
 ```
 

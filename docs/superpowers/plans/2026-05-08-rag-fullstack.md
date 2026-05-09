@@ -215,7 +215,7 @@ func TestLoad_Defaults(t *testing.T) {
 `internal/config/config.go` 定义结构体字段：
 
 - `HTTPAddr`, `DatabasePath`（默认 `./data/app.db`）, `UploadDir`（默认 `./data/uploads`）
-- `DeepSeekBaseURL`, `DeepSeekAPIKey`, `DeepSeekChatModel`, `DeepSeekEmbedModel`
+- `DeepSeekBaseURL`, `DeepSeekAPIKey`, `DeepSeekChatModel`; 嵌入：`EmbedBaseURL`, `EmbedAPIKey`（`DASHSCOPE_API_KEY` 等）, `EmbedModel`, `EmbedDimensions`
 - `RetrieveTimeout` 默认 `10s`，`LLMStreamTimeout` 默认 `180s`，`IndexTimeout` 默认 `5m`
 - `Load()`：若 `DEEPSEEK_API_KEY` 为空返回 `error`
 
