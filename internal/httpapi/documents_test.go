@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"my-rag/internal/documents"
+	"my-rag/internal/llm"
 	"my-rag/internal/store"
 )
 
@@ -25,6 +26,12 @@ func (fakeEmb) Embed(ctx context.Context, texts []string) ([][]float32, error) {
 		out[i] = []float32{float32(i + 1), 0}
 	}
 	return out, nil
+}
+
+type docTestStream struct{}
+
+func (docTestStream) StreamChat(ctx context.Context, msgs []llm.Message, onDelta func(string) error) error {
+	return onDelta("x")
 }
 
 func TestDocuments_upload_list_delete(t *testing.T) {
@@ -41,6 +48,7 @@ func TestDocuments_upload_list_delete(t *testing.T) {
 	uploadDir := filepath.Join(dir, "uploads")
 	mux := NewRouter(&RouterConfig{
 		DB: db, UploadDir: uploadDir, Embedder: fakeEmb{}, IndexTimeout: time.Minute,
+		Streamer: docTestStream{}, RetrieveTimeout: time.Second, LLMStreamTimeout: time.Minute,
 	})
 	srv := httptest.NewServer(mux)
 	defer srv.Close()

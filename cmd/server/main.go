@@ -9,6 +9,7 @@ import (
 	"my-rag/internal/config"
 	"my-rag/internal/embed"
 	"my-rag/internal/httpapi"
+	"my-rag/internal/llm"
 	"my-rag/internal/store"
 )
 
@@ -33,11 +34,15 @@ func main() {
 	}
 
 	emb := embed.NewOpenAICompat(cfg.DeepSeekBaseURL, cfg.DeepSeekAPIKey, cfg.DeepSeekEmbedModel)
+	stream := llm.NewDeepSeek(cfg.DeepSeekBaseURL, cfg.DeepSeekAPIKey, cfg.DeepSeekChatModel)
 	h := httpapi.NewRouter(&httpapi.RouterConfig{
-		DB:           db,
-		UploadDir:    cfg.UploadDir,
-		Embedder:     emb,
-		IndexTimeout: cfg.IndexTimeout,
+		DB:                db,
+		UploadDir:         cfg.UploadDir,
+		Embedder:          emb,
+		IndexTimeout:      cfg.IndexTimeout,
+		Streamer:          stream,
+		RetrieveTimeout:   cfg.RetrieveTimeout,
+		LLMStreamTimeout:  cfg.LLMStreamTimeout,
 	})
 
 	log.Printf("listening %s", cfg.HTTPAddr)
