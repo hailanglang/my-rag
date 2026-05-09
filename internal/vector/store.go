@@ -26,24 +26,38 @@ func NewStore(db *sql.DB) *Store {
 	return &Store{db: db}
 }
 
-// UpsertChunk inserts or replaces a chunk row with an embedding blob (float32 little-endian).
-func (s *Store) UpsertChunk(ctx context.Context, chunkID, documentID string, chunkIndex int, text string, embedding []float32) error {
+type execer interface {
+	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
+}
+
+// ExecUpsertChunk inserts or replaces one chunk row using db or tx.
+func ExecUpsertChunk(ctx context.Context, ex execer, chunkID, documentID string, chunkIndex int, text string, embedding []float32) error {
 	if len(embedding) == 0 {
 		return errEmptyEmbedding
 	}
 	blob := float32SliceToBlob(embedding)
 	now := time.Now().UnixMilli()
-	_, err := s.db.ExecContext(ctx, `
+	_, err := ex.ExecContext(ctx, `
 INSERT OR REPLACE INTO chunks (id, document_id, chunk_index, text, embedding, created_at)
 VALUES (?, ?, ?, ?, ?, ?)`,
 		chunkID, documentID, chunkIndex, text, blob, now)
 	return err
 }
 
+// ExecDeleteChunksByDocument deletes all chunks for a document using db or tx.
+func ExecDeleteChunksByDocument(ctx context.Context, ex execer, documentID string) error {
+	_, err := ex.ExecContext(ctx, `DELETE FROM chunks WHERE document_id = ?`, documentID)
+	return err
+}
+
+// UpsertChunk inserts or replaces a chunk row with an embedding blob (float32 little-endian).
+func (s *Store) UpsertChunk(ctx context.Context, chunkID, documentID string, chunkIndex int, text string, embedding []float32) error {
+	return ExecUpsertChunk(ctx, s.db, chunkID, documentID, chunkIndex, text, embedding)
+}
+
 // DeleteByDocument removes all chunks for a document.
 func (s *Store) DeleteByDocument(ctx context.Context, documentID string) error {
-	_, err := s.db.ExecContext(ctx, `DELETE FROM chunks WHERE document_id = ?`, documentID)
-	return err
+	return ExecDeleteChunksByDocument(ctx, s.db, documentID)
 }
 
 // Search returns up to k chunks with highest cosine similarity to query (same dimension as stored vectors).
