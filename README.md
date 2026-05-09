@@ -15,7 +15,7 @@
 | `DEEPSEEK_API_KEY` | **是** | — | DeepSeek（或兼容服务）的 API Key |
 | `DEEPSEEK_BASE_URL` | 否 | `https://api.deepseek.com` | 兼容 OpenAI 的 Base URL，**不要**带末尾 `/` |
 | `DEEPSEEK_CHAT_MODEL` | 否 | `deepseek-chat` | 对话模型名，对应 `POST .../v1/chat/completions` |
-| `DEEPSEEK_EMBED_MODEL` | 否 | `deepseek-embed` | 向量模型名，对应 `POST .../v1/embeddings` |
+| `DEEPSEEK_EMBED_MODEL` | 否 | `deepseek-embedding` | 向量模型名，对应 `POST .../v1/embeddings`（与 DeepSeek 控制台文档一致） |
 | `HTTP_ADDR` | 否 | `:8080` | HTTP 监听地址 |
 | `DATABASE_PATH` | 否 | `./data/app.db` | SQLite 数据库文件路径 |
 | `UPLOAD_DIR` | 否 | `./data/uploads` | 上传文件目录 |

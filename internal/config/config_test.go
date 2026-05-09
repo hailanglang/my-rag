@@ -23,6 +23,9 @@ func TestLoad_Defaults(t *testing.T) {
 	if c.IndexTimeout != 5*time.Minute {
 		t.Fatalf("IndexTimeout=%v", c.IndexTimeout)
 	}
+	if c.DeepSeekEmbedModel != "deepseek-embedding" {
+		t.Fatalf("DeepSeekEmbedModel=%q", c.DeepSeekEmbedModel)
+	}
 }
 
 func TestLoad_MissingAPIKey(t *testing.T) {

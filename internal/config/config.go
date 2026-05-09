@@ -36,7 +36,7 @@ func Load() (*Config, error) {
 		DeepSeekBaseURL:    getenvDefault("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
 		DeepSeekAPIKey:     key,
 		DeepSeekChatModel:  getenvDefault("DEEPSEEK_CHAT_MODEL", "deepseek-chat"),
-		DeepSeekEmbedModel: getenvDefault("DEEPSEEK_EMBED_MODEL", "deepseek-embed"),
+		DeepSeekEmbedModel: getenvDefault("DEEPSEEK_EMBED_MODEL", "deepseek-embedding"),
 		RetrieveTimeout:    durationEnv("RETRIEVE_TIMEOUT_SEC", 10*time.Second),
 		LLMStreamTimeout:   durationEnv("LLM_STREAM_TIMEOUT_SEC", 180*time.Second),
 		IndexTimeout:       durationEnv("INDEX_TIMEOUT_SEC", 5*time.Minute),
