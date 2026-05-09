@@ -140,8 +140,13 @@ func (ch *chatHandlers) postMessage(w http.ResponseWriter, r *http.Request) {
 		block, cites, err = ch.querier.BuildContext(ctx, userContent)
 	}
 	if err != nil {
-		writeAPIError(w, "RAG_FAILED", err.Error(), http.StatusInternalServerError)
-		return
+		// Degrade to no retrieval (empty context) so chat still streams when embed/upstream
+		// is misconfigured or unavailable; avoids hard 500 for the whole POST.
+		log.Printf("request_id=%s rag_build_context: %v", rid, err)
+		block, cites = "", nil
+	}
+	if cites == nil {
+		cites = []rag.Citation{}
 	}
 
 	history, err := ch.sessions.ListMessages(ctx, sid, 50)
