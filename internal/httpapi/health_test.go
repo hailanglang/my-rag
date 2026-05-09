@@ -7,7 +7,7 @@ import (
 )
 
 func TestHealth_OK(t *testing.T) {
-	mux := NewRouter()
+	mux := NewRouter(nil)
 	srv := httptest.NewServer(mux)
 	defer srv.Close()
 
