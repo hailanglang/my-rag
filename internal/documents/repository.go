@@ -46,7 +46,13 @@ FROM documents ORDER BY created_at DESC`)
 		}
 		out = append(out, d)
 	}
-	return out, rows.Err()
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	if out == nil {
+		out = []Document{}
+	}
+	return out, nil
 }
 
 // GetStoragePath returns the absolute storage path for a document id.
