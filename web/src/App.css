@@ -1,0 +1,270 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.45;
+}
+
+body {
+  margin: 0;
+  background: #0f1115;
+  color: #e8eaef;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-banner {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #242a36;
+  background: #121722;
+}
+
+.app-banner h1 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.app-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 1rem;
+  padding: 1rem;
+}
+
+@media (max-width: 900px) {
+  .app-main {
+    grid-template-columns: 1fr;
+  }
+}
+
+.doc-panel,
+.chat-panel {
+  background: #121722;
+  border: 1px solid #242a36;
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 320px;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.panel-head h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.panel-error {
+  margin: 0;
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+  background: #3a1418;
+  border: 1px solid #6b1f28;
+  color: #ffd6dc;
+}
+
+.muted {
+  margin: 0;
+  color: #9aa3b5;
+}
+
+.doc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.doc-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #242a36;
+  border-radius: 8px;
+  background: #0f1115;
+}
+
+.doc-name {
+  font-weight: 600;
+}
+
+.doc-meta {
+  margin-top: 0.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #9aa3b5;
+}
+
+.doc-err {
+  color: #ffb4bd;
+}
+
+.status {
+  text-transform: capitalize;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid #2c3444;
+  font-size: 0.78rem;
+}
+
+.status-ready {
+  border-color: #1f4d2f;
+  color: #b6f7c8;
+}
+
+.status-pending,
+.status-processing {
+  border-color: #4a3b12;
+  color: #ffe6a8;
+}
+
+.status-failed {
+  border-color: #6b1f28;
+  color: #ffd6dc;
+}
+
+button {
+  font: inherit;
+  border-radius: 8px;
+  border: 1px solid #2c3444;
+  background: #1a2230;
+  color: #e8eaef;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+button[type="submit"] {
+  border-color: #2a4d7a;
+  background: #1c3358;
+}
+
+.chat-log {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding-right: 0.25rem;
+}
+
+.bubble {
+  border: 1px solid #242a36;
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  background: #0f1115;
+}
+
+.bubble-user {
+  border-color: #2a4d7a;
+}
+
+.bubble-assistant {
+  border-color: #2c3444;
+}
+
+.bubble-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9aa3b5;
+  margin-bottom: 0.35rem;
+}
+
+.bubble-text {
+  white-space: pre-wrap;
+}
+
+.citations summary {
+  cursor: pointer;
+  margin-top: 0.5rem;
+  color: #c7d2fe;
+}
+
+.citations ol {
+  margin: 0.5rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.cite-doc {
+  font-size: 0.85rem;
+  color: #c7d2fe;
+  margin-bottom: 0.25rem;
+}
+
+blockquote {
+  margin: 0 0 0.5rem;
+  padding: 0.45rem 0.55rem;
+  border-left: 3px solid #2a4d7a;
+  background: #121722;
+  color: #dfe6ff;
+}
+
+.chat-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.chat-label {
+  font-size: 0.85rem;
+  color: #9aa3b5;
+}
+
+.chat-form textarea {
+  font: inherit;
+  border-radius: 8px;
+  border: 1px solid #242a36;
+  background: #0f1115;
+  color: #e8eaef;
+  padding: 0.55rem 0.65rem;
+  resize: vertical;
+}
+
+.chat-form textarea:disabled {
+  opacity: 0.6;
+}
+
+.chat-actions {
+  display: flex;
+  gap: 0.5rem;
+}
